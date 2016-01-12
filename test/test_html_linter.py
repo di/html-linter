@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import io
 import os
+import sys
 import unittest
 
 import html_linter
@@ -568,6 +569,42 @@ class TestHTML5LinterFunction(unittest.TestCase):
 
     def test_valid(self):
         self.assertEquals('', html_linter.lint(self.valid_html))
+
+
+class TestHTML5LinterMain(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        path = 'test/data/{}'
+        cls.valid = path.format('valid.html')
+        cls.invalid = path.format('invalid.html')
+        cls.more_invalid = path.format('more_invalid.html')
+
+    @staticmethod
+    def call_main(**kwargs):
+        exit_code = html_linter.main(kwargs)
+        return sys.stdout.getvalue().strip().splitlines(), exit_code
+
+    def test_valid(self):
+        files = [self.valid]
+        output, exit_code = self.call_main(FILENAME=files)
+        self.assertEquals(0, len(output))
+        self.assertEquals(exit_code, 0)
+
+    def test_invalid(self):
+        files = [self.invalid]
+        output, exit_code = self.call_main(FILENAME=files)
+        self.assertEquals(49, len(output))
+        self.assertEquals(exit_code, 2)
+
+    def test_multiple(self):
+        files = [self.valid, self.invalid, self.more_invalid]
+        output, exit_code = self.call_main(FILENAME=files)
+        self.assertEquals(50, len(output))
+        self.assertEquals(exit_code, 2)
+
+    def test_invalid_disable(self):
+        output, exit_code = self.call_main(**{'--disable': 'foobar'})
+        self.assertEquals(exit_code, 1)
 
 
 class TestHTML5LinterUtils(unittest.TestCase):

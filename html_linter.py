@@ -36,8 +36,12 @@ except ImportError:
 if not hasattr(HTMLParser, 'attrfind_tolerant'):
     HTMLParser.attrfind_tolerant = HTMLParser.attrfind
 
+import codecs
+import io
+import os
 import re
 import sys
+import template_remover
 
 
 def unescape(code):
@@ -1035,3 +1039,63 @@ def lint(html, exclude=None):
     messages = [m.__unicode__() for m in HTML5Linter(html).messages
                 if not isinstance(m, tuple(exclude))]
     return '\n'.join(messages)
+
+
+_DISABLE_MAP = {
+    'doctype': DocumentTypeMessage,
+    'entities': EntityReferenceMessage,
+    'trailing_whitespace': TrailingWhitespaceMessage,
+    'tabs': TabMessage,
+    'charset': CharsetMessage,
+    'void_element': VoidElementMessage,
+    'optional_tag': OptionalTagMessage,
+    'type_attribute': TypeAttributeMessage,
+    'concerns_separation': ConcernsSeparationMessage,
+    'protocol': ProtocolMessage,
+    'names': NameMessage,
+    'capitalization': CapitalizationMessage,
+    'quotation': QuotationMessage,
+    'indentation': IndentationMessage,
+    'formatting': FormattingMessage,
+    'boolean_attribute': BooleanAttributeMessage,
+    'invalid_attribute': InvalidAttributeMessage,
+    'void_zero': VoidZeroMessage,
+    'invalid_handler':  InvalidHandlerMessage,
+    'http_equiv':  HTTPEquivMessage,
+    'extra_whitespace': ExtraWhitespaceMessage,
+}
+
+
+def main(options):
+    """Entry point for the HTML5 Linter."""
+
+    # Wrap sys stdout for python 2, so print can understand unicode.
+    if sys.version_info[0] < 3:
+        sys.stdout = codecs.getwriter("utf-8")(sys.stdout)
+
+    disable_str = options.get('--disable') or ''
+    disable = disable_str.split(',')
+
+    invalid_disable = set(disable) - set(_DISABLE_MAP.keys()) - set(('',))
+    if invalid_disable:
+        sys.stderr.write(
+            'Invalid --disable arguments: %s\n\n' % ', '.join(invalid_disable))
+        sys.stderr.write(__doc__)
+        return 1
+
+    exclude = [_DISABLE_MAP[d] for d in disable if d in _DISABLE_MAP]
+
+    filenames = options.get('FILENAME', [])
+
+    results = False
+    for filename in filenames:
+        clean_html = template_remover.clean(io.open(filename).read())
+        result = lint(clean_html, exclude=exclude)
+        if result:
+            print(result)
+            results = True
+
+    if results:
+        return 2
+
+    return 0
