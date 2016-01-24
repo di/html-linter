@@ -41,6 +41,7 @@ import io
 import os
 import re
 import sys
+
 import template_remover
 
 
@@ -1060,8 +1061,8 @@ _DISABLE_MAP = {
     'boolean_attribute': BooleanAttributeMessage,
     'invalid_attribute': InvalidAttributeMessage,
     'void_zero': VoidZeroMessage,
-    'invalid_handler':  InvalidHandlerMessage,
-    'http_equiv':  HTTPEquivMessage,
+    'invalid_handler': InvalidHandlerMessage,
+    'http_equiv': HTTPEquivMessage,
     'extra_whitespace': ExtraWhitespaceMessage,
 }
 
@@ -1071,7 +1072,7 @@ def main(options):
 
     # Wrap sys stdout for python 2, so print can understand unicode.
     if sys.version_info[0] < 3:
-        sys.stdout = codecs.getwriter("utf-8")(sys.stdout)
+        sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
 
     disable_str = options.get('--disable') or ''
     disable = disable_str.split(',')

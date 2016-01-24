@@ -91,7 +91,7 @@ You can install, upgrade or uninstall html-linter with these commands::
 Python Versions
 ---------------
 
-Python 2.7 is officially supported, 3.2, 3.3 and 3.4 should also work.
+Python 2.7, 3.3, 3.4 and 3.5 are supported.
 
 Development
 -----------
@@ -112,13 +112,28 @@ TODOS and Possible Features
 
 * Make the output less verbose.
 * Integrate with HTML5 tidy.
-* Integrate with a schema.org/micrdata validator.
+* Integrate with a schema.org/microdata validator.
+
+Contributors
+------------
+
+* `Dustin Ingram <https://github.com/di>`_: support for multiple files
 
 
 Changelog
 =========
 
+v0.3 (2016-01-24)
+-----------------
+
+* Support for multiple files (by `@di <https://github.com/di>`_)
+
+v0.2 (2015-12-13)
+-----------------
+
+* Support for Python 3.5
+
 v0.1 (2014-05-07)
--------------------
+-----------------
 
 * Initial commit.

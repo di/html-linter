@@ -54,7 +54,7 @@ import docopt
 import html_linter
 
 
-__VERSION__ = '0.2.0'
+__VERSION__ = '0.3.0'
 
 
 if __name__ == '__main__':
